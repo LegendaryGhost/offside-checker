@@ -1,6 +1,6 @@
 package gui.listener;
 
-import gui.Fenetre;
+import gui.Window;
 import gui.utils.GuiUtils;
 
 import javax.imageio.ImageIO;
@@ -16,7 +16,6 @@ import java.io.IOException;
 public class RotateImageButtonLayout implements ActionListener {
     private final JPanel content;
     private BufferedImage currentImage; // L'image en cours de traitement
-    private int rotationAngle = 0; // Angle de rotation en degrés
 
     public RotateImageButtonLayout(JPanel content) {
 	this.content = content;
@@ -28,8 +27,8 @@ public class RotateImageButtonLayout implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	Fenetre fenetre = (Fenetre) SwingUtilities.getWindowAncestor(content);
-	currentImage = fenetre.getFileAsBufferedImage();
+	Window window = (Window) SwingUtilities.getWindowAncestor(content);
+	currentImage = window.getFileAsBufferedImage();
 
 	if (currentImage != null) {
 	    // Appliquer la rotation
@@ -58,7 +57,7 @@ public class RotateImageButtonLayout implements ActionListener {
 	    File newFile = saveBufferedImageToFile(rotatedImage, formatName, outputPath);
 
 	    if (newFile.exists()) {
-		fenetre.setImage(newFile); // Remplacer l'ancien fichier
+		window.setImage(newFile); // Remplacer l'ancien fichier
 		System.out.println("Image pivotée sauvegardée avec succès.");
 	    }
 	}
@@ -80,7 +79,6 @@ public class RotateImageButtonLayout implements ActionListener {
 	try {
 	    ImageIO.write(image, formatName, outputFile);
 	} catch (IOException e) {
-	    e.printStackTrace();
 	    System.out.println("Erreur lors de la sauvegarde de l'image : " + e.getMessage());
 	}
 	return outputFile;

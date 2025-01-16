@@ -13,7 +13,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
-public class Function {
+public class Utils {
 
     public static void orderedAsc(List<PointRadius> all) {
 	all.sort(Comparator.comparingDouble(pr -> pr.getPoint().y));

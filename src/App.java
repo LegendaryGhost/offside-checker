@@ -1,12 +1,12 @@
 import javax.swing.SwingUtilities;
 
-import gui.Fenetre;
+import gui.Window;
 
 public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Fenetre fenetre = new Fenetre();
-            fenetre.setVisible(true);
+            Window window = new Window();
+            window.setVisible(true);
         });
     }
 }

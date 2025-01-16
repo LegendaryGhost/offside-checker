@@ -4,17 +4,17 @@ import java.awt.Component;
 
 import javax.swing.*;
 
-import gui.Fenetre;
+import gui.Window;
 
 public class GuiUtils {
     
-    public static Fenetre getParent(Component component){
-        return (Fenetre) SwingUtilities.getWindowAncestor(component);
+    public static Window getParent(Component component){
+        return (Window) SwingUtilities.getWindowAncestor(component);
     }
 
     public static void message(Component component,String message){
-        Fenetre fenetre = (Fenetre) SwingUtilities.getWindowAncestor(component);
-        fenetre.addNotification(message);
+        Window window = (Window) SwingUtilities.getWindowAncestor(component);
+        window.addNotification(message);
     }
 
     public static JScrollPane getScrollPane(ImageIcon imageIcon) {

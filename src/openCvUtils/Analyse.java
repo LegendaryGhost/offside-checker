@@ -61,7 +61,7 @@ public class Analyse {
         }
     }
 
-    public static PointRadius getPlayerCloserToNigga(List<PointRadius> all,PointRadius black){
+    public static PointRadius getPlayerClosestToBall(List<PointRadius> all,PointRadius black){
         if (all == null || all.isEmpty() || black == null) {
             return null;
         }

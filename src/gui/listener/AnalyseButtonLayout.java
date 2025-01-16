@@ -5,10 +5,10 @@ import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import gui.Fenetre;
+import gui.Window;
 import gui.utils.GuiUtils;
 import openCvUtils.Analyse;
-import openCvUtils.Function;
+import openCvUtils.Utils;
 import openCvUtils.PointRadius;
 
 import javax.swing.*;
@@ -37,9 +37,9 @@ public class AnalyseButtonLayout implements ActionListener {
 	 */
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-	Fenetre fenetre = GuiUtils.getParent(content);
+	Window window = GuiUtils.getParent(content);
 
-	File imageFile = fenetre.getFile();
+	File imageFile = window.getFile();
 
 	if (imageFile == null || !imageFile.exists()) {
 	    JOptionPane.showMessageDialog(null, "Aucune image n'a été chargée !");
@@ -62,15 +62,15 @@ public class AnalyseButtonLayout implements ActionListener {
 	Mat hsvImage = new Mat();
 	Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_BGR2HSV);
 
-	Mat blueMask = Function.getBlueMask(hsvImage);
-	Mat redMask = Function.getRedMask(hsvImage);
-	Mat black = Function.getNiggaMask(hsvImage);
+	Mat blueMask = Utils.getBlueMask(hsvImage);
+	Mat redMask = Utils.getRedMask(hsvImage);
+	Mat black = Utils.getNiggaMask(hsvImage);
 
-	List<PointRadius> bluePoints = Function.findPointsWithRadius(blueMask, "blue");
-	List<PointRadius> redPoints = Function.findPointsWithRadius(redMask, "red");
-	List<PointRadius> niggaPoints = Function.findPointsWithRadius(black, "black");
+	List<PointRadius> bluePoints = Utils.findPointsWithRadius(blueMask, "blue");
+	List<PointRadius> redPoints = Utils.findPointsWithRadius(redMask, "red");
+	List<PointRadius> blackPoints = Utils.findPointsWithRadius(black, "black");
 
-	if (bluePoints.isEmpty() || redPoints.isEmpty() || niggaPoints.isEmpty()) {
+	if (bluePoints.isEmpty() || redPoints.isEmpty() || blackPoints.isEmpty()) {
 	    JOptionPane.showMessageDialog(null, "Impossible de faire l'analyse");
 	    return;
 	}
@@ -91,25 +91,25 @@ public class AnalyseButtonLayout implements ActionListener {
 	 * 10
 	 */
 	// 1
-	List<PointRadius> allPlayer = Function.gatherAll(bluePoints, redPoints);
-	PointRadius niggaPoint = niggaPoints.getFirst();
-	PointRadius pWithBall = Analyse.getPlayerCloserToNigga(allPlayer, niggaPoint);
+	List<PointRadius> allPlayer = Utils.gatherAll(bluePoints, redPoints);
+	PointRadius ball = blackPoints.getFirst();
+	PointRadius ballCarrier = Analyse.getPlayerClosestToBall(allPlayer, ball);
 
 	// 2
-	Function.orderedAsc(allPlayer);
+	Utils.orderedAsc(allPlayer);
 
 	// Afficher les coordonnées Y du point bleu sur l'image en blanc
-	Imgproc.putText(image, String.format("Porteur de balle", pWithBall.getPoint().y), pWithBall.getPoint(),
-		Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 255, 255), 1);
+	Imgproc.putText(image, String.format("Porteur de balle", ballCarrier.getPoint().y), ballCarrier.getPoint(),
+		Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 0), 1);
 
 	// 3
-	int direction = Analyse.findDirection(pWithBall, allPlayer);
+	int direction = Analyse.findDirection(ballCarrier, allPlayer);
 
 	// 4
-	List<PointRadius> opponents = Analyse.findOpponent(allPlayer, pWithBall);
+	List<PointRadius> opponents = Analyse.findOpponent(allPlayer, ballCarrier);
 
 	// 5
-	Function.orderedAsc(opponents);
+	Utils.orderedAsc(opponents);
 	GuiUtils.message(content, "Les defenseur est l'equipe " + opponents.getFirst().getColor());
 	PointRadius lastdefense = null;
 	if (direction == -1) {
@@ -125,10 +125,10 @@ public class AnalyseButtonLayout implements ActionListener {
 	// Afficher les coordonnées Y du point bleu sur l'image en blanc
 	assert lastdefense != null;
 	Imgproc.putText(image, "Dernier defenseur", lastdefense.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
-		new Scalar(255, 255, 255), 1);
+		new Scalar(0, 0, 0), 1);
 
 	// 6
-	PointRadius hasOffsideLine = Analyse.findOffsideLine(lastdefense, pWithBall, direction);
+	PointRadius hasOffsideLine = Analyse.findOffsideLine(lastdefense, ballCarrier, direction);
 
 	// 7 Calculer la coordonnée Y de la ligne en fonction de la direction
 	double yCoord = hasOffsideLine.getPoint().y;
@@ -154,17 +154,17 @@ public class AnalyseButtonLayout implements ActionListener {
 		    && pointRadius.getPoint().y - pointRadius.getRadius() < yCoord)) {
 		// Le joueur est hors-jeu
 		Imgproc.putText(image, "Hors jeu", pointRadius.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
-			new Scalar(0, 0, 255), 1); // Red color for offside players
-	    } else if ((direction == 1 && (pointRadius.getPoint().y > pWithBall.getPoint().y)) || (direction == -1 && (
-		    pointRadius.getPoint().y < pWithBall.getPoint().y))) {
+			new Scalar(0, 0, 50), 1); // Red color for offside players
+	    } else if ((direction == 1 && (pointRadius.getPoint().y > ballCarrier.getPoint().y)) || (direction == -1 && (
+		    pointRadius.getPoint().y < ballCarrier.getPoint().y))) {
 		// Le joueur est en position normale
 		Imgproc.putText(image, "Normal", pointRadius.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
-			new Scalar(0, 255, 0), 1); // Green color for normal players
+			new Scalar(0, 50, 0), 1); // Green color for normal players
 
 		// Dessiner une flèche de pWithBall vers pointRadius
-		Point startPoint = pWithBall.getPoint(); // Point de départ de la flèche
+		Point startPoint = ballCarrier.getPoint(); // Point de départ de la flèche
 		Point endPoint = pointRadius.getPoint(); // Point d'arrivée de la flèche
-		Imgproc.arrowedLine(image, startPoint, endPoint, new Scalar(255, 255, 255),
+		Imgproc.arrowedLine(image, startPoint, endPoint, new Scalar(0, 0, 0),
 			2); // Flèche bleue avec une épaisseur de 2
 	    }
 	}

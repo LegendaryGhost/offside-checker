@@ -12,11 +12,11 @@ import gui.listener.ChargerButtonLayout;
 import gui.listener.RotateImageButtonLayout;
 import gui.listener.SupprimerButtonLayout;
 
-public class Fenetre extends JFrame {
+public class Window extends JFrame {
 
     private static File image;
 
-    public Fenetre() {
+    public Window() {
 	// Définir le titre de la fenêtre
 	super("Offside checker");
 
@@ -65,13 +65,13 @@ public class Fenetre extends JFrame {
 	rotateButton.addActionListener(new RotateImageButtonLayout(content));
 	menuBarBottom.add(rotateButton);
 
-	JButton SuppImage = createButton("Supprimer Image");
-	SuppImage.addActionListener(new SupprimerButtonLayout(content));
-	menuBarBottom.add(SuppImage);
+	JButton deleteButton = createButton("Supprimer Image");
+	deleteButton.addActionListener(new SupprimerButtonLayout(content));
+	menuBarBottom.add(deleteButton);
 
-	JButton beginAnalyse = createButton("Analyser");
-	beginAnalyse.addActionListener(new AnalyseButtonLayout(content));
-	menuBarBottom.add(beginAnalyse);
+	JButton analyseButton = createButton("Analyser");
+	analyseButton.addActionListener(new AnalyseButtonLayout(content));
+	menuBarBottom.add(analyseButton);
 
 	// Ajouter la barre latérale à droite et le contenu au centre
 	add(menuBarBottom, BorderLayout.SOUTH);
@@ -98,7 +98,6 @@ public class Fenetre extends JFrame {
 	    try {
 		return ImageIO.read(image);
 	    } catch (IOException e) {
-		e.printStackTrace();
 		System.out.println("Erreur lors de la lecture de l'image : " + e.getMessage());
 	    }
 	}

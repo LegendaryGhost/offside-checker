@@ -2,7 +2,7 @@ package gui.listener;
 
 import javax.swing.*;
 
-import gui.Fenetre;
+import gui.Window;
 import gui.utils.GuiUtils;
 
 import java.awt.*;
@@ -37,9 +37,9 @@ public class ChargerButtonLayout implements ActionListener {
             content.revalidate();
             content.repaint();
 
-            Fenetre fenetre = (Fenetre) SwingUtilities.getWindowAncestor(content);
-            fenetre.setImage(lastLoadedFile);
-            fenetre.addNotification("-> Image chargée avec succès ! Chemin de l'image : " + lastLoadedFile.getAbsolutePath());
+            Window window = (Window) SwingUtilities.getWindowAncestor(content);
+            window.setImage(lastLoadedFile);
+            window.addNotification("-> Image chargée avec succès ! Chemin de l'image : " + lastLoadedFile.getAbsolutePath());
         }
     }
 }
