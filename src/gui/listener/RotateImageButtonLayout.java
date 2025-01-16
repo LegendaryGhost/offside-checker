@@ -32,11 +32,8 @@ public class RotateImageButtonLayout implements ActionListener {
 	currentImage = fenetre.getFileAsBufferedImage();
 
 	if (currentImage != null) {
-	    // Augmenter l'angle de 90° à chaque clic
-	    rotationAngle = (rotationAngle + 90) % 360;
-
 	    // Appliquer la rotation
-	    double radians = Math.toRadians(rotationAngle);
+	    double radians = Math.toRadians(90);
 	    double sin = Math.abs(Math.sin(radians));
 	    double cos = Math.abs(Math.cos(radians));
 	    int width = currentImage.getWidth();
