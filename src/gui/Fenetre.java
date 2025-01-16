@@ -29,7 +29,7 @@ public class Fenetre extends JFrame {
 	// Centrer la fenêtre sur l'écran
 	setLocationRelativeTo(null);
 
-	setResizable(false);
+	setResizable(true);
 
 	// Initialiser les composants
 	initComponents();
@@ -40,10 +40,10 @@ public class Fenetre extends JFrame {
 	setLayout(new BorderLayout());
 
 	// Création de la barre latérale
-	JPanel sidebarWest = new JPanel();
-	sidebarWest.setBackground(Color.LIGHT_GRAY);
-	sidebarWest.setPreferredSize(new Dimension(100, 0)); // Largeur fixe pour la barre latérale
-	sidebarWest.setLayout(new BoxLayout(sidebarWest, BoxLayout.Y_AXIS));
+	JPanel menuBarBottom = new JPanel();
+	menuBarBottom.setBackground(Color.LIGHT_GRAY);
+	menuBarBottom.setPreferredSize(new Dimension(0, 30)); // Largeur fixe pour la barre latérale
+	menuBarBottom.setLayout(new BoxLayout(menuBarBottom, BoxLayout.X_AXIS));
 
 	// Création de la zone de contenu
 	JPanel content = new JPanel();
@@ -58,23 +58,23 @@ public class Fenetre extends JFrame {
 	// Ajouter un bouton "Charger" et l'associer au listener
 	JButton loadButton = createButton("Charger");
 	loadButton.addActionListener(new ChargerButtonLayout(content));
-	sidebarWest.add(loadButton);
+	menuBarBottom.add(loadButton);
 
 	// Bouton pour faire pivoter l'image
 	JButton rotateButton = createButton("Pivoter");
 	rotateButton.addActionListener(new RotateImageButtonLayout(content));
-	sidebarWest.add(rotateButton);
+	menuBarBottom.add(rotateButton);
 
 	JButton SuppImage = createButton("Supprimer Image");
 	SuppImage.addActionListener(new SupprimerButtonLayout(content));
-	sidebarWest.add(SuppImage);
+	menuBarBottom.add(SuppImage);
 
 	JButton beginAnalyse = createButton("Analyser");
 	beginAnalyse.addActionListener(new AnalyseButtonLayout(content));
-	sidebarWest.add(beginAnalyse);
+	menuBarBottom.add(beginAnalyse);
 
 	// Ajouter la barre latérale à droite et le contenu au centre
-	add(sidebarWest, BorderLayout.WEST);
+	add(menuBarBottom, BorderLayout.SOUTH);
 	add(content, BorderLayout.CENTER);
     }
 
