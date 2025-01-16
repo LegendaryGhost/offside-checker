@@ -3,12 +3,15 @@ package gui.listener;
 import gui.Fenetre;
 import gui.utils.GuiUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class RotateImageButtonLayout implements ActionListener {
     private final JPanel content;
@@ -51,6 +54,16 @@ public class RotateImageButtonLayout implements ActionListener {
 
 	    // Mettre à jour l'image affichée
 	    displayImage(rotatedImage);
+
+	    // Sauvegarder l'image pivotée et remplacer le fichier dans Fenetre
+	    String formatName = "jpg"; // ou "jpg" selon le format souhaité
+	    String outputPath = "rotated_image.jpg"; // ou un autre chemin temporaire
+	    File newFile = saveBufferedImageToFile(rotatedImage, formatName, outputPath);
+
+	    if (newFile.exists()) {
+		fenetre.setImage(newFile); // Remplacer l'ancien fichier
+		System.out.println("Image pivotée sauvegardée avec succès.");
+	    }
 	}
     }
 
@@ -63,5 +76,16 @@ public class RotateImageButtonLayout implements ActionListener {
 	content.add(scrollPane, BorderLayout.CENTER);
 	content.revalidate();
 	content.repaint();
+    }
+
+    public static File saveBufferedImageToFile(BufferedImage image, String formatName, String outputPath) {
+	File outputFile = new File(outputPath);
+	try {
+	    ImageIO.write(image, formatName, outputFile);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	    System.out.println("Erreur lors de la sauvegarde de l'image : " + e.getMessage());
+	}
+	return outputFile;
     }
 }
