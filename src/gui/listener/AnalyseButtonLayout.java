@@ -121,7 +121,8 @@ public class AnalyseButtonLayout implements ActionListener {
         }
 
         // Afficher les coordonnées Y du point bleu sur l'image en blanc
-        Imgproc.putText(image, "last defense", lastdefense.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 255, 255), 1);
+	assert lastdefense != null;
+	Imgproc.putText(image, "last defense", lastdefense.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 255, 255), 1);
 
         // 6 
         PointRadius hasOffsideLine = Analyse.findOffsideLine(lastdefense, pWithBall, direction);

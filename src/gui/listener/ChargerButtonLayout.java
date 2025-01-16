@@ -10,7 +10,7 @@ import java.io.File;
 
 
 public class ChargerButtonLayout implements ActionListener {
-    private JPanel content;
+    private final JPanel content;
   
     public ChargerButtonLayout(JPanel content) {
         this.content = content;
