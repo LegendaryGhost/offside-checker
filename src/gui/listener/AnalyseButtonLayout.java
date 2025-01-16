@@ -1,17 +1,19 @@
 package gui.listener;
 
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import gui.Fenetre;
-import gui.utils.FunctionGui;
+import gui.utils.GuiUtils;
 import openCvUtils.Analyse;
 import openCvUtils.Function;
 import openCvUtils.PointRadius;
 
 import javax.swing.*;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -36,7 +38,7 @@ public class AnalyseButtonLayout implements ActionListener {
         */
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        Fenetre fenetre = FunctionGui.getParent(content);
+        Fenetre fenetre = GuiUtils.getParent(content);
 
         File imageFile = fenetre.getFile();
 
@@ -108,15 +110,15 @@ public class AnalyseButtonLayout implements ActionListener {
 
         // 5 
         Function.orderedAsc(opponents);
-        FunctionGui.message(content, "Les defenseur est l'equipe "+opponents.getFirst().getColor());
+        GuiUtils.message(content, "Les defenseur est l'equipe "+opponents.getFirst().getColor());
         PointRadius lastdefense = null;
         if(direction == -1){
-            FunctionGui.message(content, "Miakatra");
+            GuiUtils.message(content, "Miakatra");
             lastdefense = opponents.get(1);
 
         }
         if(direction == 1){
-            FunctionGui.message(content, "Midina");
+            GuiUtils.message(content, "Midina");
             lastdefense = opponents.get(opponents.size() - 2);
         }
 
@@ -156,9 +158,6 @@ public class AnalyseButtonLayout implements ActionListener {
         // Convertir l'image Mat en BufferedImage et l'afficher dans le JPanel
         BufferedImage bufferedImage = matToBufferedImage(image);
         displayImage(bufferedImage);
-
-       
-
     }
 
     private static void displayDetectedPoints(Mat image, List<PointRadius> bluePoints, List<PointRadius> redPoints, List<PointRadius> blackPoints) {
@@ -205,14 +204,14 @@ public class AnalyseButtonLayout implements ActionListener {
         // Créer un ImageIcon à partir du BufferedImage
         ImageIcon imageIcon = new ImageIcon(image);
 
-        // Créer un JLabel et y mettre l'ImageIcon
-        JLabel label = new JLabel(imageIcon);
-        
+        // Utiliser GuiUtils.getScrollPane pour obtenir un JScrollPane
+        JScrollPane scrollPane = GuiUtils.getScrollPane(imageIcon);
+
         // Effacer le contenu actuel du JPanel
         content.removeAll();
 
-        // Ajouter le JLabel à la fenêtre
-        content.add(label);
+        // Ajouter le JScrollPane à la fenêtre
+        content.add(scrollPane, BorderLayout.CENTER);
 
         // Repeindre le JPanel pour afficher la nouvelle image
         content.revalidate();

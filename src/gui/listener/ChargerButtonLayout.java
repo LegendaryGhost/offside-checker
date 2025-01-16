@@ -3,6 +3,7 @@ package gui.listener;
 import javax.swing.*;
 
 import gui.Fenetre;
+import gui.utils.GuiUtils;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +13,7 @@ import java.io.File;
 
 public class ChargerButtonLayout implements ActionListener {
     private final JPanel content;
-  
+
     public ChargerButtonLayout(JPanel content) {
         this.content = content;
     }
@@ -26,7 +27,8 @@ public class ChargerButtonLayout implements ActionListener {
             File lastLoadedFile = fileChooser.getSelectedFile();
 
             // Charger l'image
-            JScrollPane scrollPane = getScrollPane(lastLoadedFile);
+            ImageIcon imageIcon = new ImageIcon(lastLoadedFile.getAbsolutePath());
+            JScrollPane scrollPane = GuiUtils.getScrollPane(imageIcon);
 
             // Mettre à jour le panneau de contenu
             content.removeAll();
@@ -39,18 +41,5 @@ public class ChargerButtonLayout implements ActionListener {
             fenetre.setImage(lastLoadedFile);
             fenetre.addNotification("-> Image chargée avec succès ! Chemin de l'image : " + lastLoadedFile.getAbsolutePath());
         }
-    }
-
-    private static JScrollPane getScrollPane(File lastLoadedFile) {
-        ImageIcon imageIcon = new ImageIcon(lastLoadedFile.getAbsolutePath());
-
-        // Mettre l'image dans un JLabel
-        JLabel imageLabel = new JLabel(imageIcon);
-
-        // Créer un JScrollPane pour gérer le défilement si l'image est grande
-        JScrollPane scrollPane = new JScrollPane(imageLabel);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        return scrollPane;
     }
 }

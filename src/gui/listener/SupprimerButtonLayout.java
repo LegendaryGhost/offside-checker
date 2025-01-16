@@ -3,7 +3,7 @@ package gui.listener;
 import javax.swing.*;
 
 import gui.Fenetre;
-import gui.utils.FunctionGui;
+import gui.utils.GuiUtils;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,7 +31,7 @@ public class SupprimerButtonLayout implements ActionListener {
         contentPanel.revalidate();
         contentPanel.repaint();
 
-        Fenetre fenetre = FunctionGui.getParent(contentPanel);
+        Fenetre fenetre = GuiUtils.getParent(contentPanel);
         fenetre.setImage(null);
 
     }
