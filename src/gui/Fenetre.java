@@ -1,11 +1,15 @@
 package gui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import gui.listener.AnalyseButtonLayout;
 import gui.listener.ChargerButtonLayout;
+import gui.listener.RotateImageButtonLayout;
 import gui.listener.SupprimerButtonLayout;
 
 public class Fenetre extends JFrame {
@@ -56,6 +60,11 @@ public class Fenetre extends JFrame {
 	loadButton.addActionListener(new ChargerButtonLayout(content));
 	sidebarWest.add(loadButton);
 
+	// Bouton pour faire pivoter l'image
+	JButton rotateButton = createButton("Pivoter");
+	rotateButton.addActionListener(new RotateImageButtonLayout(content));
+	sidebarWest.add(rotateButton);
+
 	JButton SuppImage = createButton("Supprimer Image");
 	SuppImage.addActionListener(new SupprimerButtonLayout(content));
 	sidebarWest.add(SuppImage);
@@ -82,6 +91,18 @@ public class Fenetre extends JFrame {
 
     public File getFile() {
 	return image;
+    }
+
+    public BufferedImage getFileAsBufferedImage() {
+	if (image != null) {
+	    try {
+		return ImageIO.read(image);
+	    } catch (IOException e) {
+		e.printStackTrace();
+		System.out.println("Erreur lors de la lecture de l'image : " + e.getMessage());
+	    }
+	}
+	return null;
     }
 
     public void setImage(File file) {

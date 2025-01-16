@@ -1,7 +1,6 @@
 package gui.utils;
 
 import java.awt.Component;
-import java.io.File;
 
 import javax.swing.*;
 
