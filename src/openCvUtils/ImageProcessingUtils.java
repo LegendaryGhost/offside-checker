@@ -3,16 +3,38 @@ package openCvUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.*;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 public class ImageProcessingUtils {
+
+    public static List<Rectangle> findRectangles(Mat mask, String color) {
+	List<Rectangle> rectangles = new ArrayList<>();
+
+	// Find contours in the mask
+	List<MatOfPoint> contours = new ArrayList<>();
+	Mat hierarchy = new Mat();
+	Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+	// Process each contour
+	for (MatOfPoint contour : contours) {
+	    // Filter small contours
+	    double area = Imgproc.contourArea(contour);
+	    if (area < 20) { // Adjust threshold as needed
+		continue;
+	    }
+
+	    // Calculate bounding rectangle
+	    Rect rect = Imgproc.boundingRect(contour);
+
+	    // Add rectangle data to the list
+	    rectangles.add(new Rectangle(rect, color));
+	}
+
+	return rectangles;
+    }
 
     public static List<Circle> findCircles(Mat mask, String color) {
 	List<Circle> circles = new ArrayList<>();

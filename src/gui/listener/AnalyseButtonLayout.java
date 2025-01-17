@@ -1,6 +1,7 @@
 package gui.listener;
 
 import openCvUtils.ListUtils;
+import openCvUtils.Rectangle;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -65,11 +66,18 @@ public class AnalyseButtonLayout implements ActionListener {
 
 	Mat blueMask = ImageProcessingUtils.getBlueMask(hsvImage);
 	Mat redMask = ImageProcessingUtils.getRedMask(hsvImage);
-	Mat black = ImageProcessingUtils.getBlackMask(hsvImage);
+	Mat blackMask = ImageProcessingUtils.getBlackMask(hsvImage);
 
 	List<Circle> bluePoints = ImageProcessingUtils.findCircles(blueMask, "blue");
 	List<Circle> redPoints = ImageProcessingUtils.findCircles(redMask, "red");
-	List<Circle> blackPoints = ImageProcessingUtils.findCircles(black, "black");
+	List<Circle> blackPoints = ImageProcessingUtils.findCircles(blackMask, "black");
+
+	List<Rectangle> rectangles = ImageProcessingUtils.findRectangles(blackMask, "black");
+	System.out.println("Rectangle size: " + rectangles.size());
+	for (Rectangle rectangle : rectangles) {
+	    System.out.println(rectangle);
+	    Imgproc.rectangle(image, rectangle.getRect(), new Scalar(0, 0, 255));
+	}
 
 	if (bluePoints.isEmpty() || redPoints.isEmpty() || blackPoints.isEmpty()) {
 	    JOptionPane.showMessageDialog(null, "Impossible de faire l'analyse");
