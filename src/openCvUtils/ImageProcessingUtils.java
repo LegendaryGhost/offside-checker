@@ -1,7 +1,6 @@
 package openCvUtils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.opencv.core.Core;
@@ -13,21 +12,10 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
-public class Utils {
+public class ImageProcessingUtils {
 
-    public static void orderedAsc(List<PointRadius> all) {
-	all.sort(Comparator.comparingDouble(pr -> pr.getPoint().y));
-    }
-
-    public static List<PointRadius> gatherAll(List<PointRadius> blue, List<PointRadius> red) {
-	List<PointRadius> all = new ArrayList<>();
-	all.addAll(blue);
-	all.addAll(red);
-	return all;
-    }
-
-    public static List<PointRadius> findPointsWithRadius(Mat mask, String color) {
-	List<PointRadius> pointsWithRadius = new ArrayList<>();
+    public static List<Circle> findCircles(Mat mask, String color) {
+	List<Circle> circles = new ArrayList<>();
 
 	// Trouver les contours dans le masque
 	List<MatOfPoint> contours = new ArrayList<>();
@@ -46,10 +34,10 @@ public class Utils {
 	    Imgproc.minEnclosingCircle(new MatOfPoint2f(contour.toArray()), center, radius);
 
 	    // Ajouter le centre et le rayon à la liste
-	    pointsWithRadius.add(new PointRadius(center, radius[0], color));
+	    circles.add(new Circle(center, radius[0], color));
 	}
 
-	return pointsWithRadius;
+	return circles;
     }
 
     public static List<Point> findPoints(Mat mask) {
@@ -106,7 +94,7 @@ public class Utils {
 
     }
 
-    public static Mat getNiggaMask(Mat hsvImage) {
+    public static Mat getBlackMask(Mat hsvImage) {
 	// Plage de noir (faible saturation et faible luminosité)
 	Scalar lowerBlack = new Scalar(0, 0, 0);
 	Scalar upperBlack = new Scalar(180, 255, 50);

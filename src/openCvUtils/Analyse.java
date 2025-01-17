@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Analyse {
 
-    public static PointRadius findOffsideLine(PointRadius lastDefense, PointRadius ball, int direction ){
+    public static Circle findOffsideLine(Circle lastDefense, Circle ball, int direction ){
         double checker = lastDefense.getPoint().y - ball.getPoint().y;
         if(checker > 0){ // defenseur eo ambany dia bol ambony
             if(direction == 1){ // sens midina
@@ -26,7 +26,7 @@ public class Analyse {
     }
     
 
-    public static List<PointRadius> findOpponent(List<PointRadius> all, PointRadius teamMate) {
+    public static List<Circle> findOpponent(List<Circle> all, Circle teamMate) {
         if (all == null || teamMate == null) {
             return null;
         }
@@ -38,8 +38,8 @@ public class Analyse {
     }
 
 
-    public static int findDirection(PointRadius pWithBall, List<PointRadius> all){
-        PointRadius top = all.getFirst();
+    public static int findDirection(Circle pWithBall, List<Circle> all){
+        Circle top = all.getFirst();
         if(!top.getColor().equals(pWithBall.getColor())){
             double directionChecker = pWithBall.getPoint().y - top.getPoint().y;
             if(directionChecker > 0){
@@ -50,7 +50,7 @@ public class Analyse {
             }
         }
         else{
-            PointRadius bottom = all.getLast();
+            Circle bottom = all.getLast();
             double directionChecker = pWithBall.getPoint().y - bottom.getPoint().y;
             if(directionChecker > 0){
                 return -1;
@@ -61,15 +61,15 @@ public class Analyse {
         }
     }
 
-    public static PointRadius getPlayerClosestToBall(List<PointRadius> all,PointRadius black){
+    public static Circle getPlayerClosestToBall(List<Circle> all, Circle black){
         if (all == null || all.isEmpty() || black == null) {
             return null;
         }
 
-        PointRadius closest = null;
+        Circle closest = null;
         double minDistance = Double.MAX_VALUE;
 
-        for (PointRadius pr : all) {
+        for (Circle pr : all) {
             double distance = calculateDistance(pr, black);
             if (distance < minDistance) {
                 minDistance = distance;
@@ -80,7 +80,7 @@ public class Analyse {
         return closest;
     }
 
-    private static double calculateDistance(PointRadius pr1, PointRadius pr2) {
+    private static double calculateDistance(Circle pr1, Circle pr2) {
         double dx = pr1.getPoint().x - pr2.getPoint().x;
         double dy = pr1.getPoint().y - pr2.getPoint().y;
         return Math.sqrt(dx * dx + dy * dy);

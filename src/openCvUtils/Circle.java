@@ -2,12 +2,13 @@ package openCvUtils;
 
 import org.opencv.core.Point;
 
-public class PointRadius {
+public class Circle {
+
     Point point;
     double radius;
     String color;
 
-    public PointRadius(Point point, double radius) {
+    public Circle(Point point, double radius) {
         this.point = point;
         this.radius = radius;
     }
@@ -36,12 +37,10 @@ public class PointRadius {
         this.color = color;
     }
 
-    public PointRadius(Point point, double radius, String color) {
+    public Circle(Point point, double radius, String color) {
         this.point = point;
         this.radius = radius;
         this.color = color;
     }
 
-    
-    
 }

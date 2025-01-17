@@ -1,5 +1,6 @@
 package gui.listener;
 
+import openCvUtils.ListUtils;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -8,8 +9,8 @@ import org.opencv.imgproc.Imgproc;
 import gui.Window;
 import gui.utils.GuiUtils;
 import openCvUtils.Analyse;
-import openCvUtils.Utils;
-import openCvUtils.PointRadius;
+import openCvUtils.ImageProcessingUtils;
+import openCvUtils.Circle;
 
 import javax.swing.*;
 
@@ -62,13 +63,13 @@ public class AnalyseButtonLayout implements ActionListener {
 	Mat hsvImage = new Mat();
 	Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_BGR2HSV);
 
-	Mat blueMask = Utils.getBlueMask(hsvImage);
-	Mat redMask = Utils.getRedMask(hsvImage);
-	Mat black = Utils.getNiggaMask(hsvImage);
+	Mat blueMask = ImageProcessingUtils.getBlueMask(hsvImage);
+	Mat redMask = ImageProcessingUtils.getRedMask(hsvImage);
+	Mat black = ImageProcessingUtils.getBlackMask(hsvImage);
 
-	List<PointRadius> bluePoints = Utils.findPointsWithRadius(blueMask, "blue");
-	List<PointRadius> redPoints = Utils.findPointsWithRadius(redMask, "red");
-	List<PointRadius> blackPoints = Utils.findPointsWithRadius(black, "black");
+	List<Circle> bluePoints = ImageProcessingUtils.findCircles(blueMask, "blue");
+	List<Circle> redPoints = ImageProcessingUtils.findCircles(redMask, "red");
+	List<Circle> blackPoints = ImageProcessingUtils.findCircles(black, "black");
 
 	if (bluePoints.isEmpty() || redPoints.isEmpty() || blackPoints.isEmpty()) {
 	    JOptionPane.showMessageDialog(null, "Impossible de faire l'analyse");
@@ -91,12 +92,12 @@ public class AnalyseButtonLayout implements ActionListener {
 	 * 10
 	 */
 	// 1
-	List<PointRadius> allPlayer = Utils.gatherAll(bluePoints, redPoints);
-	PointRadius ball = blackPoints.getFirst();
-	PointRadius ballCarrier = Analyse.getPlayerClosestToBall(allPlayer, ball);
+	List<Circle> allPlayer = ListUtils.gatherAll(bluePoints, redPoints);
+	Circle ball = blackPoints.getFirst();
+	Circle ballCarrier = Analyse.getPlayerClosestToBall(allPlayer, ball);
 
 	// 2
-	Utils.orderedAsc(allPlayer);
+	ListUtils.orderedAsc(allPlayer);
 
 	// Afficher les coordonnées Y du point bleu sur l'image en blanc
 	Imgproc.putText(image, String.format("Porteur de balle", ballCarrier.getPoint().y), ballCarrier.getPoint(),
@@ -106,12 +107,12 @@ public class AnalyseButtonLayout implements ActionListener {
 	int direction = Analyse.findDirection(ballCarrier, allPlayer);
 
 	// 4
-	List<PointRadius> opponents = Analyse.findOpponent(allPlayer, ballCarrier);
+	List<Circle> opponents = Analyse.findOpponent(allPlayer, ballCarrier);
 
 	// 5
-	Utils.orderedAsc(opponents);
+	ListUtils.orderedAsc(opponents);
 	GuiUtils.message(content, "Les defenseur est l'equipe " + opponents.getFirst().getColor());
-	PointRadius lastdefense = null;
+	Circle lastdefense = null;
 	if (direction == -1) {
 	    GuiUtils.message(content, "Miakatra");
 	    lastdefense = opponents.get(1);
@@ -128,7 +129,7 @@ public class AnalyseButtonLayout implements ActionListener {
 		new Scalar(0, 0, 0), 1);
 
 	// 6
-	PointRadius hasOffsideLine = Analyse.findOffsideLine(lastdefense, ballCarrier, direction);
+	Circle hasOffsideLine = Analyse.findOffsideLine(lastdefense, ballCarrier, direction);
 
 	// 7 Calculer la coordonnée Y de la ligne en fonction de la direction
 	double yCoord = hasOffsideLine.getPoint().y;
@@ -146,24 +147,24 @@ public class AnalyseButtonLayout implements ActionListener {
 	Imgproc.line(image, start, end, new Scalar(0, 255, 255), 2); // Yellow color with thickness 2
 
 	// 8
-	List<PointRadius> teamMates = Analyse.findOpponent(allPlayer, lastdefense);
+	List<Circle> teamMates = Analyse.findOpponent(allPlayer, lastdefense);
 
 	// 9 Vérifier les joueurs hors-jeu
-	for (PointRadius pointRadius : teamMates) {
-	    if ((direction == 1 && pointRadius.getPoint().y + pointRadius.getRadius() > yCoord) || (direction == -1
-		    && pointRadius.getPoint().y - pointRadius.getRadius() < yCoord)) {
+	for (Circle circle : teamMates) {
+	    if ((direction == 1 && circle.getPoint().y + circle.getRadius() > yCoord) || (direction == -1
+		    && circle.getPoint().y - circle.getRadius() < yCoord)) {
 		// Le joueur est hors-jeu
-		Imgproc.putText(image, "Hors jeu", pointRadius.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
+		Imgproc.putText(image, "Hors jeu", circle.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
 			new Scalar(0, 0, 50), 1); // Red color for offside players
-	    } else if ((direction == 1 && (pointRadius.getPoint().y > ballCarrier.getPoint().y)) || (direction == -1 && (
-		    pointRadius.getPoint().y < ballCarrier.getPoint().y))) {
+	    } else if ((direction == 1 && (circle.getPoint().y > ballCarrier.getPoint().y)) || (direction == -1 && (
+		    circle.getPoint().y < ballCarrier.getPoint().y))) {
 		// Le joueur est en position normale
-		Imgproc.putText(image, "Normal", pointRadius.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
+		Imgproc.putText(image, "Normal", circle.getPoint(), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5,
 			new Scalar(0, 50, 0), 1); // Green color for normal players
 
 		// Dessiner une flèche de pWithBall vers pointRadius
 		Point startPoint = ballCarrier.getPoint(); // Point de départ de la flèche
-		Point endPoint = pointRadius.getPoint(); // Point d'arrivée de la flèche
+		Point endPoint = circle.getPoint(); // Point d'arrivée de la flèche
 		Imgproc.arrowedLine(image, startPoint, endPoint, new Scalar(0, 0, 0),
 			2); // Flèche bleue avec une épaisseur de 2
 	    }
@@ -174,23 +175,23 @@ public class AnalyseButtonLayout implements ActionListener {
 	displayImage(bufferedImage);
     }
 
-    private static void displayDetectedPoints(Mat image, List<PointRadius> bluePoints, List<PointRadius> redPoints,
-	    List<PointRadius> blackPoints) {
+    private static void displayDetectedPoints(Mat image, List<Circle> bluePoints, List<Circle> redPoints,
+	    List<Circle> blackPoints) {
 	// Dessiner un cercle bleu pour chaque point bleu et afficher les coordonnées Y en blanc
-	for (PointRadius pr : bluePoints) {
+	for (Circle pr : bluePoints) {
 	    // Dessiner le point principal en bleu
 	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(255, 0, 0), -1); // Blue
 
 	}
 
 	// Dessiner un cercle rouge pour chaque point rouge et afficher les coordonnées Y en blanc
-	for (PointRadius pr : redPoints) {
+	for (Circle pr : redPoints) {
 	    // Dessiner le point principal en rouge
 	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(0, 0, 255), -1); // Red
 	}
 
 	// Dessiner un cercle noir pour chaque point noir et afficher les coordonnées Y en blanc
-	for (PointRadius pr : blackPoints) {
+	for (Circle pr : blackPoints) {
 	    // Dessiner le point principal en noir
 	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(0, 0, 0), -1); // Black
 	}
