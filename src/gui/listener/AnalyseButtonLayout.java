@@ -1,6 +1,7 @@
 package gui.listener;
 
 import openCvUtils.*;
+import openCvUtils.Rectangle;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -67,9 +68,9 @@ public class AnalyseButtonLayout implements ActionListener {
 	List<Circle> redPoints = ImageProcessingUtils.findCircles(redMask, "red");
 	List<Circle> blackPoints = ImageProcessingUtils.findCircles(blackMask, "black");
 
-	List<Line> lines = ImageProcessingUtils.findLines(image);
-	for(Line line : lines) {
-	    Imgproc.line(image, line.getPoint1(), line.getPoint2(), new Scalar(0, 0, 255));
+	List<Rectangle> goals = ImageProcessingUtils.findGoals(image);
+	for (Rectangle goal : goals) {
+	    Imgproc.rectangle(image, goal.getRect(), new Scalar(0, 0, 255));
 	}
 
 	if (bluePoints.isEmpty() || redPoints.isEmpty() || blackPoints.isEmpty()) {

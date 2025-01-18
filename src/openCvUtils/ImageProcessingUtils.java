@@ -9,7 +9,78 @@ import org.opencv.imgproc.Imgproc;
 
 public class ImageProcessingUtils {
 
-    public static List<Line> findLines(Mat image) {
+    public static List<Rectangle> findGoals(Mat image) {
+	List<Line> lines = findLines(image);
+	List<List<Line>> lineGroups = groupCloseLines(lines, 20);
+	List<Rectangle> goals = new ArrayList<>();
+	for (List<Line> lineGroup : lineGroups) {
+	    if (lineGroup.size() <= 1)
+		continue;
+
+	    Point topLeftPoint = new Point(image.width(), image.height());
+	    Point bottomRightPoint = new Point(0, 0);
+	    for (Line line : lineGroup) {
+		Point point1 = line.getPoint1(), point2 = line.getPoint2();
+
+		if (point1.x < topLeftPoint.x || point1.y < topLeftPoint.y)
+		    topLeftPoint = point1;
+		if (point1.x > bottomRightPoint.x || point1.y > bottomRightPoint.y)
+		    bottomRightPoint = point1;
+
+		if (point2.x < topLeftPoint.x || point2.y < topLeftPoint.y)
+		    topLeftPoint = point2;
+		if (point2.x > bottomRightPoint.x || point2.y > bottomRightPoint.y)
+		    bottomRightPoint = point2;
+	    }
+	    Rect rect = new Rect(
+		    (int) topLeftPoint.x,
+		    (int) topLeftPoint.y,
+		    (int) (bottomRightPoint.x - topLeftPoint.x),
+		    (int) (bottomRightPoint.y - topLeftPoint.y)
+	    );
+	    goals.add(new Rectangle(rect, "No colour"));
+	}
+	return goals;
+    }
+
+    public static List<List<Line>> groupCloseLines(List<Line> lines, double maxDistance) {
+	List<List<Line>> groupedLines = new ArrayList<>();
+	boolean[] visited = new boolean[lines.size()];
+
+	for (int i = 0; i < lines.size(); i++) {
+	    if (visited[i]) {
+		continue;
+	    }
+
+	    List<Line> group = new ArrayList<>();
+	    group.add(lines.get(i));
+	    visited[i] = true;
+
+	    for (int j = i + 1; j < lines.size(); j++) {
+		if (!visited[j] && areLinesClose(lines.get(i), lines.get(j), maxDistance)) {
+		    group.add(lines.get(j));
+		    visited[j] = true;
+		}
+	    }
+
+	    groupedLines.add(group);
+	}
+
+	return groupedLines;
+    }
+
+    private static boolean areLinesClose(Line line1, Line line2, double maxDistance) {
+	return (distance(line1.getPoint1(), line2.getPoint1()) < maxDistance
+		|| distance(line1.getPoint1(), line2.getPoint2()) < maxDistance
+		|| distance(line1.getPoint2(), line2.getPoint1()) < maxDistance
+		|| distance(line1.getPoint2(), line2.getPoint2()) < maxDistance);
+    }
+
+    private static double distance(Point p1, Point p2) {
+	return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    }
+
+    private static List<Line> findLines(Mat image) {
 	// Convert the image to grayscale
 	Mat grayImage = new Mat();
 	Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
