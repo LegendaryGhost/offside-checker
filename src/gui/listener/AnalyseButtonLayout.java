@@ -1,7 +1,6 @@
 package gui.listener;
 
-import openCvUtils.ListUtils;
-import openCvUtils.Rectangle;
+import openCvUtils.*;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -9,9 +8,6 @@ import org.opencv.imgproc.Imgproc;
 
 import gui.Window;
 import gui.utils.GuiUtils;
-import openCvUtils.Analyse;
-import openCvUtils.ImageProcessingUtils;
-import openCvUtils.Circle;
 
 import javax.swing.*;
 
@@ -49,7 +45,6 @@ public class AnalyseButtonLayout implements ActionListener {
 	}
 
 	// Charger l'image avec OpenCV
-	System.out.println("Chemin de l'image : " + imageFile.getAbsolutePath());
 	Mat image = Imgcodecs.imread(imageFile.getAbsolutePath());
 
 	if (image.empty()) {
@@ -72,11 +67,9 @@ public class AnalyseButtonLayout implements ActionListener {
 	List<Circle> redPoints = ImageProcessingUtils.findCircles(redMask, "red");
 	List<Circle> blackPoints = ImageProcessingUtils.findCircles(blackMask, "black");
 
-	List<Rectangle> rectangles = ImageProcessingUtils.findRectangles(blackMask, "black");
-	System.out.println("Rectangle size: " + rectangles.size());
-	for (Rectangle rectangle : rectangles) {
-	    System.out.println(rectangle);
-	    Imgproc.rectangle(image, rectangle.getRect(), new Scalar(0, 0, 255));
+	List<Line> lines = ImageProcessingUtils.findLines(image);
+	for(Line line : lines) {
+	    Imgproc.line(image, line.getPoint1(), line.getPoint2(), new Scalar(0, 0, 255));
 	}
 
 	if (bluePoints.isEmpty() || redPoints.isEmpty() || blackPoints.isEmpty()) {
@@ -108,7 +101,7 @@ public class AnalyseButtonLayout implements ActionListener {
 	ListUtils.orderedAsc(allPlayer);
 
 	// Afficher les coordonnées Y du point bleu sur l'image en blanc
-	Imgproc.putText(image, String.format("Porteur de balle", ballCarrier.getPoint().y), ballCarrier.getPoint(),
+	Imgproc.putText(image, "Porteur de balle", ballCarrier.getPoint(),
 		Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 0), 1);
 
 	// 3
@@ -181,28 +174,6 @@ public class AnalyseButtonLayout implements ActionListener {
 	// Convertir l'image Mat en BufferedImage et l'afficher dans le JPanel
 	BufferedImage bufferedImage = matToBufferedImage(image);
 	displayImage(bufferedImage);
-    }
-
-    private static void displayDetectedPoints(Mat image, List<Circle> bluePoints, List<Circle> redPoints,
-	    List<Circle> blackPoints) {
-	// Dessiner un cercle bleu pour chaque point bleu et afficher les coordonnées Y en blanc
-	for (Circle pr : bluePoints) {
-	    // Dessiner le point principal en bleu
-	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(255, 0, 0), -1); // Blue
-
-	}
-
-	// Dessiner un cercle rouge pour chaque point rouge et afficher les coordonnées Y en blanc
-	for (Circle pr : redPoints) {
-	    // Dessiner le point principal en rouge
-	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(0, 0, 255), -1); // Red
-	}
-
-	// Dessiner un cercle noir pour chaque point noir et afficher les coordonnées Y en blanc
-	for (Circle pr : blackPoints) {
-	    // Dessiner le point principal en noir
-	    Imgproc.circle(image, pr.getPoint(), (int) pr.getRadius(), new Scalar(0, 0, 0), -1); // Black
-	}
     }
 
     // Méthode pour convertir Mat (OpenCV) en BufferedImage

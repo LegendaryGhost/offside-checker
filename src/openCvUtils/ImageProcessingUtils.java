@@ -6,34 +6,31 @@ import java.util.List;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
 
 public class ImageProcessingUtils {
 
-    public static List<Rectangle> findRectangles(Mat mask, String color) {
-	List<Rectangle> rectangles = new ArrayList<>();
+    public static List<Line> findLines(Mat image) {
+	// Convert the image to grayscale
+	Mat grayImage = new Mat();
+	Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
 
-	// Find contours in the mask
-	List<MatOfPoint> contours = new ArrayList<>();
-	Mat hierarchy = new Mat();
-	Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+	// Apply edge detection
+	Mat edges = new Mat();
+	Imgproc.Canny(grayImage, edges, 50, 150);
 
-	// Process each contour
-	for (MatOfPoint contour : contours) {
-	    // Filter small contours
-	    double area = Imgproc.contourArea(contour);
-	    if (area < 20) { // Adjust threshold as needed
-		continue;
-	    }
+	// Detect lines using Hough Line Transform
+	Mat linesMat = new Mat();
+	Imgproc.HoughLinesP(edges, linesMat, 1, Math.PI / 180, 40, 20, 5);
 
-	    // Calculate bounding rectangle
-	    Rect rect = Imgproc.boundingRect(contour);
-
-	    // Add rectangle data to the list
-	    rectangles.add(new Rectangle(rect, color));
+	// Store detected lines in a list
+	List<Line> lines = new ArrayList<>();
+	for (int i = 0; i < linesMat.rows(); i++) {
+	    double[] lineParams = linesMat.get(i, 0);
+	    double x1 = lineParams[0], y1 = lineParams[1], x2 = lineParams[2], y2 = lineParams[3];
+	    lines.add(new Line(x1, y1, x2, y2));
 	}
 
-	return rectangles;
+	return lines;
     }
 
     public static List<Circle> findCircles(Mat mask, String color) {
@@ -60,25 +57,6 @@ public class ImageProcessingUtils {
 	}
 
 	return circles;
-    }
-
-    public static List<Point> findPoints(Mat mask) {
-	List<Point> points = new ArrayList<>();
-	// Trouver les contours
-	List<MatOfPoint> contours = new ArrayList<>();
-	Mat hierarchy = new Mat();
-	Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-	// Trouver le centre de chaque contour
-	for (MatOfPoint contour : contours) {
-	    Moments moments = Imgproc.moments(contour);
-	    if (moments.m00 != 0) {
-		int x = (int) (moments.m10 / moments.m00);
-		int y = (int) (moments.m01 / moments.m00);
-		points.add(new Point(x, y));
-	    }
-	}
-	return points;
     }
 
     public static Mat getBlueMask(Mat hsvImage) {
