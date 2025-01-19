@@ -15,16 +15,18 @@ import java.io.IOException;
 
 public class RotateImageButtonLayout implements ActionListener {
     private final JPanel content;
+    private final int imageIndex;
 
-    public RotateImageButtonLayout(JPanel content) {
+    public RotateImageButtonLayout(JPanel content, int imageIndex) {
 	this.content = content;
+	this.imageIndex = imageIndex;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 	Window window = (Window) SwingUtilities.getWindowAncestor(content);
 	// L'image en cours de traitement
-	BufferedImage currentImage = window.getFileAsBufferedImage();
+	BufferedImage currentImage = window.getFileAsBufferedImage(0);
 
 	if (currentImage != null) {
 	    // Appliquer la rotation
@@ -53,7 +55,7 @@ public class RotateImageButtonLayout implements ActionListener {
 	    File newFile = saveBufferedImageToFile(rotatedImage, formatName, outputPath);
 
 	    if (newFile.exists()) {
-		window.setImage(newFile); // Remplacer l'ancien fichier
+		window.setImage(newFile, imageIndex); // Remplacer l'ancien fichier
 	    }
 	}
     }

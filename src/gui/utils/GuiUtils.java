@@ -12,11 +12,6 @@ public class GuiUtils {
         return (Window) SwingUtilities.getWindowAncestor(component);
     }
 
-    public static void message(Component component,String message){
-        Window window = (Window) SwingUtilities.getWindowAncestor(component);
-        window.addNotification(message);
-    }
-
     public static JScrollPane getScrollPane(ImageIcon imageIcon) {
         // Mettre l'image dans un JLabel
         JLabel imageLabel = new JLabel(imageIcon);

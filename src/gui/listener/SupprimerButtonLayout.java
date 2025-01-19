@@ -12,9 +12,11 @@ import java.awt.event.ActionListener;
 public class SupprimerButtonLayout implements ActionListener {
 
     private final JPanel contentPanel;
+    private final int imageIndex;
 
-    public SupprimerButtonLayout(JPanel contentPanel) {
+    public SupprimerButtonLayout(JPanel contentPanel, int imageIndex) {
         this.contentPanel = contentPanel;
+        this.imageIndex = imageIndex;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class SupprimerButtonLayout implements ActionListener {
         contentPanel.repaint();
 
         Window window = GuiUtils.getParent(contentPanel);
-        window.setImage(null);
-
+        window.setImage(null, imageIndex);
     }
+
 }

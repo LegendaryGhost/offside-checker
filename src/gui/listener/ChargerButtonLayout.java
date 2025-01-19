@@ -13,9 +13,11 @@ import java.io.File;
 
 public class ChargerButtonLayout implements ActionListener {
     private final JPanel content;
+    private final int imageIndex;
 
-    public ChargerButtonLayout(JPanel content) {
+    public ChargerButtonLayout(JPanel content, int imageIndex) {
         this.content = content;
+        this.imageIndex = imageIndex;
     }
 
     @Override
@@ -38,8 +40,7 @@ public class ChargerButtonLayout implements ActionListener {
             content.repaint();
 
             Window window = (Window) SwingUtilities.getWindowAncestor(content);
-            window.setImage(lastLoadedFile);
-            window.addNotification("-> Image chargée avec succès ! Chemin de l'image : " + lastLoadedFile.getAbsolutePath());
+            window.setImage(lastLoadedFile, imageIndex);
         }
     }
 }

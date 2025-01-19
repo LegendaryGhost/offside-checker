@@ -38,7 +38,7 @@ public class AnalyseButtonLayout implements ActionListener {
 
 	Window window = GuiUtils.getParent(content);
 
-	File imageFile = window.getFile();
+	File imageFile = window.getFile(0);
 
 	if (imageFile == null || !imageFile.exists()) {
 	    JOptionPane.showMessageDialog(null, "Aucune image n'a été chargée !");
@@ -113,15 +113,11 @@ public class AnalyseButtonLayout implements ActionListener {
 
 	// 5
 	ListUtils.orderedAsc(opponents);
-	GuiUtils.message(content, "Les defenseur est l'equipe " + opponents.getFirst().getColor());
 	Circle lastdefense = null;
 	if (direction == -1) {
-	    GuiUtils.message(content, "Miakatra");
 	    lastdefense = opponents.get(1);
-
 	}
 	if (direction == 1) {
-	    GuiUtils.message(content, "Midina");
 	    lastdefense = opponents.get(opponents.size() - 2);
 	}
 
