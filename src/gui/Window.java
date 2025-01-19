@@ -99,7 +99,7 @@ public class Window extends JFrame {
 	menuBarBottom.add(deleteButton2);
 
 	JButton analyseButton = createButton("Analyser");
-	analyseButton.addActionListener(new AnalyseButtonLayout(contentLeft));
+	analyseButton.addActionListener(new AnalyseButtonLayout(contentLeft, contentRight));
 	menuBarBottom.add(analyseButton);
 
 	// Ajouter la barre latérale à droite et le contenu au centre

@@ -4,13 +4,14 @@ import org.opencv.core.Point;
 
 public class Circle {
 
-    Point point;
-    double radius;
-    String color;
+    private Point point;
+    private double radius;
+    private String color;
 
-    public Circle(Point point, double radius) {
+    public Circle(Point point, double radius, String color) {
         this.point = point;
         this.radius = radius;
+        this.color = color;
     }
 
     public Point getPoint() {
@@ -34,12 +35,6 @@ public class Circle {
     }
 
     public void setColor(String color) {
-        this.color = color;
-    }
-
-    public Circle(Point point, double radius, String color) {
-        this.point = point;
-        this.radius = radius;
         this.color = color;
     }
 

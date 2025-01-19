@@ -38,6 +38,11 @@ public class ImageProcessingUtils {
 		    (int) (bottomRightPoint.x - topLeftPoint.x),
 		    (int) (bottomRightPoint.y - topLeftPoint.y)
 	    );
+
+	    // Avoid adding residual rectangles
+	    if (rect.width < 30 || rect.height < 30)
+		continue;
+
 	    goals.add(new Rectangle(rect, "No colour"));
 	}
 	return goals;
@@ -80,7 +85,7 @@ public class ImageProcessingUtils {
 	return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
 
-    private static List<Line> findLines(Mat image) {
+    public static List<Line> findLines(Mat image) {
 	// Convert the image to grayscale
 	Mat grayImage = new Mat();
 	Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
